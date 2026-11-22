@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>زرآزما | سامانه هوشمند مدیریت و زمان‌بندی مقالات</title>
+  
+  <!-- فونت وزیرمتن و فونت‌های استاندارد فارسی -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* پالت رنگی رسمی و استخراج‌شده از وب‌سایت زرآزما */
+    :root {
+      --zarazma-navy: #02203F;        /* سرمه‌ای تیره المنتور زرآزما */
+      --zarazma-blue-dark: #11225C;   /* آبی دکمه‌ها و المان‌های کلیدی */
+      --zarazma-blue-mid: #0F427B;    /* آبی ثانویه سازمانی */
+      --zarazma-blue-accent: #0E71B9; /* آبی درخشان و اکتیو زرآزما */
+      --zarazma-blue-light: #E1F3FF;  /* آبی خیلی روشن برای پس‌زمینه و هایلایت */
+      --zarazma-border: #E5EBF2;      /* خطوط و کادرها */
+      --zarazma-text-dark: #2E2E2E;   /* رنگ متون اصلی */
+      --zarazma-text-muted: #718092;  /* رنگ توضیحات و متون فرعی */
+      --zarazma-bg: #F4F8FC;          /* پس‌زمینه کل سامانه */
+      --card-bg: #FFFFFF;
+      --card-shadow: 0 4px 14px rgba(2, 32, 63, 0.06);
+      --success: #059669;
+      --warning: #d97706;
+    }
+
+    [data-theme="dark"] {
+      --zarazma-bg: #031528;
+      --card-bg: #07223F;
+      --zarazma-text-dark: #F8FAFC;
+      --zarazma-text-muted: #94A3B8;
+      --zarazma-border: #133961;
+      --zarazma-blue-light: #0B335E;
+      --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+    }
+
+    body {
+      background-color: var(--zarazma-bg);
+      color: var(--zarazma-text-dark);
+      min-height: 100vh;
+      padding: 24px 20px;
+      line-height: 1.6;
+      transition: background-color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* نوار بالا و هدر برند زرآزما */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--zarazma-border);
+      border-top: 4px solid var(--zarazma-blue-accent);
+      padding: 20px 28px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-badge {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--zarazma-navy), var(--zarazma-blue-accent));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 26px;
+      box-shadow: 0 6px 16px rgba(14, 113, 185, 0.25);
+    }
+
+    .brand-title h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--zarazma-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    [data-theme="dark"] .brand-title h1 {
+      color: #fff;
+    }
+
+    .brand-title h1 span {
+      color: var(--zarazma-blue-accent);
+    }
+
+    .brand-title p {
+      font-size: 13px;
+      color: var(--zarazma-text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--zarazma-blue-accent);
+      color: #FFFFFF;
+    }
+    .btn-primary:hover {
+      background-color: var(--zarazma-blue-mid);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(14, 113, 185, 0.25);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--zarazma-border);
+      color: var(--zarazma-text-dark);
+    }
+    .btn-outline:hover {
+      background: var(--zarazma-blue-light);
+      border-color: var(--zarazma-blue-accent);
+      color: var(--zarazma-blue-accent);
+    }
+
+    .theme-toggle-btn {
+      padding: 8px 12px;
+      background: var(--zarazma-blue-light);
+      border: 1px solid var(--zarazma-border);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--zarazma-blue-accent);
+      font-size: 16px;
+    }
+
+    /* کارت‌های KPI */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--zarazma-border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--zarazma-blue-accent);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .kpi-title {
+      font-size: 13px;
+      color: var(--zarazma-text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: var(--zarazma-blue-light);
+      color: var(--zarazma-blue-accent);
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--zarazma-navy);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    [data-theme="dark"] .kpi-value {
+      color: #fff;
+    }
+
+    .kpi-unit {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--zarazma-text-muted);
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--zarazma-text-muted);
+      margin-top: 6px;
+    }
+
+    /* گرید چارت‌ها */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--zarazma-border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .chart-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--zarazma-navy);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    [data-theme="dark"] .chart-card-title {
+      color: #fff;
+    }
+
+    /* جدول مقالات بر مبنای استایل جدول‌های سایت زرآزما */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--zarazma-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    .table-toolbar {
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--zarazma-border);
+      background: rgba(14, 113, 185, 0.02);
+    }
+
+    .search-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .input-search {
+      background: var(--zarazma-bg);
+      border: 1px solid var(--zarazma-border);
+      color: var(--zarazma-text-dark);
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 280px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .input-search:focus {
+      border-color: var(--zarazma-blue-accent);
+      box-shadow: 0 0 0 3px rgba(14, 113, 185, 0.15);
+    }
+
+    .select-filter {
+      background: var(--zarazma-bg);
+      border: 1px solid var(--zarazma-border);
+      color: var(--zarazma-text-dark);
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+    }
+
+    thead th {
+      background-color: var(--zarazma-blue-light);
+      color: var(--zarazma-blue-mid);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 14px 18px;
+      border-bottom: 2px solid var(--zarazma-blue-accent);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 15px 18px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--zarazma-border);
+      vertical-align: middle;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: rgba(14, 113, 185, 0.015);
+    }
+
+    tbody tr:hover {
+      background-color: rgba(14, 113, 185, 0.06);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-published {
+      background: #ECFDF5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+    }
+
+    .badge-scheduled {
+      background: #FEF3C7;
+      color: #D97706;
+      border: 1px solid #FDE68A;
+    }
+
+    [data-theme="dark"] .badge-published {
+      background: rgba(5, 150, 105, 0.15);
+      border-color: rgba(5, 150, 105, 0.4);
+    }
+
+    [data-theme="dark"] .badge-scheduled {
+      background: rgba(217, 119, 6, 0.15);
+      border-color: rgba(217, 119, 6, 0.4);
+    }
+
+    .date-pill {
+      font-family: monospace;
+      font-size: 13px;
+      direction: ltr;
+      display: inline-block;
+      background: var(--zarazma-blue-light);
+      color: var(--zarazma-blue-mid);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--zarazma-text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+    .action-btn:hover {
+      color: #DC2626;
+    }
+
+    /* مودال ثبت مقاله */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 32, 63, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--zarazma-border);
+      border-top: 4px solid var(--zarazma-blue-accent);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      padding: 26px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--zarazma-text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--zarazma-bg);
+      border: 1px solid var(--zarazma-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--zarazma-text-dark);
+      font-size: 14px;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--zarazma-blue-accent);
+      box-shadow: 0 0 0 3px rgba(14, 113, 185, 0.15);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .auto-jalali-box {
+      background: var(--zarazma-blue-light);
+      border: 1px dashed var(--zarazma-blue-accent);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--zarazma-blue-mid);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: var(--zarazma-navy);
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 200;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      border-right: 4px solid var(--zarazma-blue-accent);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- هدر با هویت سازمانی زرآزما -->
+    <header>
+      <div class="brand-section">
+        <div class="logo-badge">🔬</div>
+        <div class="brand-title">
+          <h1>سامانه مقالات تخصصی <span>زرآزما</span></h1>
+          <p>سیستم پایش زمان‌بندی، ارزیابی کلمات و تقویم تحریریه آنالیزهای معدنی</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(5, 150, 105, 0.08); color: #059669; border: 1px solid rgba(5, 150, 105, 0.25); border-radius: 20px; font-size: 12px; font-weight: 700;">
+          <span style="width: 8px; height: 8px; background: #059669; border-radius: 50%; display: inline-block;"></span>
+          پایشگر آنلاین تحریریه
+        </div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn" title="تغییر حالت شب/روز">🌙</button>
+        <button class="btn btn-outline" onclick="exportCSV()">📥 خروجی اکسل (CSV)</button>
+        <button class="btn btn-outline" onclick="copyMarkdownTable()">📋 کپی جدول</button>
+      </div>
+    </header>
+
+    <!-- کارت‌های شاخص‌های کلیدی (KPI) -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">مجموع مقالات</span>
+          <div class="kpi-icon">📚</div>
+        </div>
+        <div class="kpi-value"><span id="kpi-count">۲</span> <span class="kpi-unit">مقاله</span></div>
+        <div class="kpi-sub" id="kpi-status-breakdown">۱ منتشر شده | ۱ در صف</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">مجموع کلمات محتوا</span>
+          <div class="kpi-icon">✍️</div>
+        </div>
+        <div class="kpi-value"><span id="kpi-words">۵,۶۸۵</span> <span class="kpi-unit">کلمه</span></div>
+        <div class="kpi-sub">تولید شده برای سایت زرآزما</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">میانگین طول مقالات</span>
+          <div class="kpi-icon">📏</div>
+        </div>
+        <div class="kpi-value"><span id="kpi-avg">۲,۸۴۳</span> <span class="kpi-unit">کلمه/مقاله</span></div>
+        <div class="kpi-sub">استاندارد مقالات علمی-فنی</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">زمان مطالعه تخمینی</span>
+          <div class="kpi-icon">⏱️</div>
+        </div>
+        <div class="kpi-value"><span id="kpi-reading-time">۲۸</span> <span class="kpi-unit">دقیقه</span></div>
+        <div class="kpi-sub">بر مبنای ۲۰۰ کلمه در دقیقه</div>
+      </div>
+    </div>
+
+    <!-- نمودارها بر پایه پالت زرآزما -->
+    <div class="dashboard-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">
+          <span>📊 توزیع حجم کلمات مقالات</span>
+          <span style="font-size: 12px; color: var(--zarazma-text-muted);">مقایسه طول مقالات</span>
+        </div>
+        <div style="height: 220px;">
+          <canvas id="wordsChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">
+          <span>🎯 وضعیت انتشار مقالات</span>
+        </div>
+        <div style="height: 220px; display: flex; justify-content: center; align-items: center;">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- جدول مقالات -->
+    <div class="table-container">
+      <div class="table-toolbar">
+        <div class="search-filter-group">
+          <input type="text" id="searchInput" class="input-search" placeholder="🔍 جستجو در موضوع یا عناوین..." oninput="renderTable()">
+          <select id="statusFilter" class="select-filter" onchange="renderTable()">
+            <option value="all">تمام وضعیت‌ها</option>
+            <option value="منتشر شده">منتشر شده</option>
+            <option value="در صف انتشار">در صف انتشار / زمان‌بندی</option>
+          </select>
+          <select id="sortFilter" class="select-filter" onchange="renderTable()">
+            <option value="date-desc">جدیدترین تاریخ</option>
+            <option value="date-asc">قدیمی‌ترین تاریخ</option>
+            <option value="words-desc">بیشترین کلمه</option>
+            <option value="words-asc">کمترین کلمه</option>
+          </select>
+        </div>
+        <div style="font-size: 13px; color: var(--zarazma-text-muted);" id="tableCountDisplay">
+          نمایش ۲ از ۲ مقاله
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>عنوان و موضوع تخصصی مقاله</th>
+              <th style="width: 140px;">تعداد کلمات</th>
+              <th style="width: 150px;">تاریخ میلادی</th>
+              <th style="width: 150px;">تاریخ شمسی</th>
+              <th style="width: 110px;">ساعت انتشار</th>
+              <th style="width: 140px;">وضعیت</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- ردیف‌ها پویا رندر می‌شوند -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال ثبت مقاله -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <h3 style="font-size: 18px; margin-bottom: 18px; color: var(--zarazma-navy);">➕ ثبت مقاله جدید</h3>
+      <div class="form-group">
+        <label>عنوان / موضوع مقاله:</label>
+        <input type="text" id="newTitle" class="form-control" placeholder="مثلاً: روش‌های هضم کانسنگ در آزمایشگاه معدنی">
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>تعداد کلمات:</label>
+          <input type="number" id="newWords" class="form-control" placeholder="مثلاً: 2500">
+        </div>
+        <div class="form-group">
+          <label>ساعت انتشار:</label>
+          <input type="time" id="newTime" class="form-control" value="11:00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>تاریخ میلادی انتشار:</label>
+        <input type="date" id="newGDate" class="form-control" onchange="updateModalJalali()">
+      </div>
+      <div class="auto-jalali-box">
+        <span>📅 تاریخ شمسی محاسبه شده:</span>
+        <strong id="modalJalaliResult">-</strong>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-outline" onclick="closeAddModal()">انصراف</button>
+        <button class="btn btn-primary" onclick="saveNewArticle()">ذخیره مقاله</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toastMessage">عملیات با موفقیت انجام شد</div>
+
+  <script>
+    // داده‌های مقالات با ثبت دقیق هر دو مقاله
+    let articles = [
+      {
+        id: 1,
+        title: "تفکیک گوگرد سولفیدی و سولفاتی در کانسنگ؛ روش و تفسیر",
+        word_count: 3014,
+        gregorian_date: "2026-11-22",
+        jalali_date: "1405/09/01",
+        jalali_display: "۱ آذر ۱۴۰۵",
+        time: "14:31",
+        status: "منتشر شده"
+      },
+      {
+        id: 2,
+        title: "دقت و صحت در دادههای آنالیز معدنی؛ تفاوت و روش ارزیابی",
+        word_count: 2671,
+        gregorian_date: "2026-11-24",
+        jalali_date: "1405/09/03",
+        jalali_display: "۳ آذر ۱۴۰۵",
+        time: "11:00",
+        status: "در صف انتشار"
+      }
+    ];
+
+    // ذخیره در localStorage برای همگام‌سازی فوری
+    localStorage.setItem("zarazma_articles", JSON.stringify(articles));
+
+    // در محیط آنلاین، داده‌های زنده را از articles_data.json بخوان
+    if (window.location.protocol.startsWith('http')) {
+      fetch('articles_data.json?v=' + Date.now())
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            articles = data;
+            renderKPIs();
+            renderTable();
+            renderCharts();
+          }
+        })
+        .catch(() => {});
+    }
+
+    // الگوریتم تبدیل میلادی به شمسی جلالی
+    function gregorianToJalali(gy, gm, gd) {
+      const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      let jy = (gy > 1600) ? 979 : 0;
+      gy -= (gy > 1600) ? 1600 : 621;
+      let gy2 = (gm > 2) ? (gy + 1) : gy;
+      let days = (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+      jy += 33 * Math.floor(days / 12053);
+      days %= 12053;
+      jy += 4 * Math.floor(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        jy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      let jm, jd;
+      if (days < 186) {
+        jm = 1 + Math.floor(days / 31);
+        jd = 1 + (days % 31);
+      } else {
+        jm = 7 + Math.floor((days - 186) / 30);
+        jd = 1 + ((days - 186) % 30);
+      }
+      return { jy, jm, jd };
+    }
+
+    const monthNames = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"];
+
+    function formatJalali(jy, jm, jd) {
+      return `${jd} ${monthNames[jm - 1]} ${jy}`;
+    }
+
+    function updateModalJalali() {
+      const val = document.getElementById("newGDate").value;
+      if (!val) {
+        document.getElementById("modalJalaliResult").textContent = "-";
+        return;
+      }
+      const parts = val.split("-");
+      const res = gregorianToJalali(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+      document.getElementById("modalJalaliResult").textContent = formatJalali(res.jy, res.jm, res.jd);
+    }
+
+    let wordsChartInstance = null;
+    let statusChartInstance = null;
+
+    function renderCharts() {
+      const ctxWords = document.getElementById('wordsChart').getContext('2d');
+      const ctxStatus = document.getElementById('statusChart').getContext('2d');
+
+      const labels = articles.map((a, idx) => `مقاله ${(idx + 1).toLocaleString('fa-IR')}`);
+      const dataWords = articles.map(a => a.word_count);
+
+      if (wordsChartInstance) wordsChartInstance.destroy();
+      wordsChartInstance = new Chart(ctxWords, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'تعداد کلمات',
+            data: dataWords,
+            backgroundColor: 'rgba(14, 113, 185, 0.85)',
+            borderColor: '#02203F',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              titleFont: { family: 'Vazirmatn', size: 13, weight: 'bold' },
+              bodyFont: { family: 'Vazirmatn', size: 12 },
+              padding: 12,
+              callbacks: {
+                title: function(items) {
+                  const idx = items[0].dataIndex;
+                  return articles[idx] ? articles[idx].title : '';
+                },
+                label: function(item) {
+                  return `تعداد کلمات: ${item.raw.toLocaleString('fa-IR')} کلمه`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { family: 'Vazirmatn' } } },
+            x: { grid: { display: false }, ticks: { font: { family: 'Vazirmatn', weight: 'bold' } } }
+          }
+        }
+      });
+
+      const publishedCount = articles.filter(a => a.status === "منتشر شده").length;
+      const scheduledCount = articles.filter(a => a.status === "در صف انتشار").length;
+
+      if (statusChartInstance) statusChartInstance.destroy();
+      statusChartInstance = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['منتشر شده', 'در صف انتشار'],
+          datasets: [{
+            data: [publishedCount, scheduledCount],
+            backgroundColor: ['#059669', '#0E71B9'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { family: 'Vazirmatn' } } }
+          },
+          cutout: '72%'
+        }
+      });
+    }
+
+    function renderKPIs() {
+      const totalCount = articles.length;
+      const totalWords = articles.reduce((sum, a) => sum + (parseInt(a.word_count) || 0), 0);
+      const avgWords = totalCount > 0 ? Math.round(totalWords / totalCount) : 0;
+      const readingMins = Math.round(totalWords / 200);
+
+      const pubCount = articles.filter(a => a.status === "منتشر شده").length;
+      const queueCount = articles.filter(a => a.status === "در صف انتشار").length;
+
+      document.getElementById("kpi-count").textContent = totalCount.toLocaleString("fa-IR");
+      document.getElementById("kpi-words").textContent = totalWords.toLocaleString("fa-IR");
+      document.getElementById("kpi-avg").textContent = avgWords.toLocaleString("fa-IR");
+      document.getElementById("kpi-reading-time").textContent = readingMins.toLocaleString("fa-IR");
+      document.getElementById("kpi-status-breakdown").textContent = `${pubCount.toLocaleString("fa-IR")} منتشر شده | ${queueCount.toLocaleString("fa-IR")} در صف`;
+    }
+
+    function renderTable() {
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const statusF = document.getElementById("statusFilter").value;
+      const sortF = document.getElementById("sortFilter").value;
+
+      let filtered = [...articles].filter(a => {
+        const matchesSearch = a.title.toLowerCase().includes(search);
+        const matchesStatus = (statusF === "all") || (a.status === statusF);
+        return matchesSearch && matchesStatus;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortF === "date-desc") return new Date(b.gregorian_date) - new Date(a.gregorian_date);
+        if (sortF === "date-asc") return new Date(a.gregorian_date) - new Date(b.gregorian_date);
+        if (sortF === "words-desc") return b.word_count - a.word_count;
+        if (sortF === "words-asc") return a.word_count - b.word_count;
+        return 0;
+      });
+
+      document.getElementById("tableCountDisplay").textContent = `نمایش ${filtered.length.toLocaleString("fa-IR")} از ${articles.length.toLocaleString("fa-IR")} مقاله`;
+
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--zarazma-text-muted);">هیچ مقاله‌ای یافت نشد</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((a, idx) => {
+        const tr = document.createElement("tr");
+        const isPub = a.status === "منتشر شده";
+        tr.innerHTML = `
+          <td style="color: var(--zarazma-text-muted); font-weight: 600;">${(idx + 1).toLocaleString("fa-IR")}</td>
+          <td style="font-weight: 700; color: var(--zarazma-navy);">
+            ${a.title}
+          </td>
+          <td>
+            <span style="font-weight: 700; color: var(--zarazma-blue-accent);">${parseInt(a.word_count).toLocaleString("fa-IR")}</span>
+            <span style="font-size: 11px; color: var(--zarazma-text-muted);">کلمه</span>
+          </td>
+          <td><span class="date-pill">${a.gregorian_date}</span></td>
+          <td style="font-weight: 700; color: var(--zarazma-blue-mid);">${a.jalali_display || a.jalali_date}</td>
+          <td style="direction: ltr; text-align: right; color: var(--zarazma-text-muted); font-weight: 600;">${a.time}</td>
+          <td>
+            <span class="badge ${isPub ? 'badge-published' : 'badge-scheduled'}">
+              ${isPub ? '● منتشر شده' : '⏳ در صف انتشار'}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function toggleStatus(id) {
+      const art = articles.find(a => a.id === id);
+      if (art) {
+        art.status = art.status === "منتشر شده" ? "در صف انتشار" : "منتشر شده";
+        saveState();
+      }
+    }
+
+    function deleteArticle(id) {
+      if (confirm("آیا از حذف این مقاله اطمینان دارید؟")) {
+        articles = articles.filter(a => a.id !== id);
+        saveState();
+        showToast("مقاله با موفقیت حذف شد");
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById("addModal").classList.add("active");
+      document.getElementById("newGDate").value = new Date().toISOString().split("T")[0];
+      updateModalJalali();
+    }
+
+    function closeAddModal() {
+      document.getElementById("addModal").classList.remove("active");
+    }
+
+    function saveNewArticle() {
+      const title = document.getElementById("newTitle").value.trim();
+      const words = parseInt(document.getElementById("newWords").value);
+      const gDate = document.getElementById("newGDate").value;
+      const time = document.getElementById("newTime").value;
+
+      if (!title || !words || !gDate) {
+        alert("لطفاً مشخصات را کامل وارد کنید.");
+        return;
+      }
+
+      const parts = gDate.split("-");
+      const jRes = gregorianToJalali(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+      const jDisplay = formatJalali(jRes.jy, jRes.jm, jRes.jd);
+      const jDateStr = `${jRes.jy}/${String(jRes.jm).padStart(2,'0')}/${String(jRes.jd).padStart(2,'0')}`;
+
+      const pubDateTime = new Date(`${gDate}T${time || '00:00'}`);
+      const isPast = pubDateTime <= new Date();
+
+      const newArt = {
+        id: Date.now(),
+        title: title,
+        word_count: words,
+        gregorian_date: gDate,
+        jalali_date: jDateStr,
+        jalali_display: jDisplay,
+        time: time || "11:00",
+        status: isPast ? "منتشر شده" : "در صف انتشار"
+      };
+
+      articles.push(newArt);
+      saveState();
+      closeAddModal();
+      showToast("مقاله جدید به داشبورد زرآزما افزوده شد");
+
+      document.getElementById("newTitle").value = "";
+      document.getElementById("newWords").value = "";
+    }
+
+    function saveState() {
+      localStorage.setItem("zarazma_articles", JSON.stringify(articles));
+      renderKPIs();
+      renderTable();
+      renderCharts();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toastMessage");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      document.getElementById("themeBtn").textContent = next === "dark" ? "☀️" : "🌙";
+    }
+
+    function copyMarkdownTable() {
+      let md = "| # | عنوان و موضوع مقاله | تعداد کلمات | تاریخ میلادی | تاریخ شمسی | ساعت | وضعیت |\n";
+      md += "|:---:|:---|:---:|:---:|:---:|:---:|:---:|\n";
+      articles.forEach((a, i) => {
+        md += `| ${i+1} | **${a.title}** | ${a.word_count.toLocaleString('fa-IR')} | \`${a.gregorian_date}\` | ${a.jalali_display} | ${a.time} | ${a.status} |\n`;
+      });
+      navigator.clipboard.writeText(md).then(() => {
+        showToast("جدول مقالات کپی شد 📋");
+      });
+    }
+
+    function exportCSV() {
+      let csv = "\uFEFFشماره,عنوان مقاله,تعداد کلمات,تاریخ میلادی,تاریخ شمسی,ساعت,وضعیت\n";
+      articles.forEach((a, i) => {
+        csv += `"${i+1}","${a.title.replace(/"/g, '""')}","${a.word_count}","${a.gregorian_date}","${a.jalali_display}","${a.time}","${a.status}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `zarazma_articles_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("فایل اکسل دانلود شد 📥");
+    }
+
+    renderKPIs();
+    renderTable();
+    renderCharts();
+  </script>
+</body>
+</html>
